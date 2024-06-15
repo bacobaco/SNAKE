@@ -31,6 +31,9 @@ typedef struct
 
 TTF_Font *font = NULL;
 SDL_Color white = {255, 255, 255, 255}; // RGBA
+SDL_Color green = {50, 255, 255, 50}; // RGBA
+SDL_Color red = {255, 50, 50, 255}; // RGBA
+SDL_Color blue = {50, 50, 255, 255}; // RGBA
 Mix_Chunk *eat_sound = NULL;            // Variable globale pour le son
 
 int food_x, food_y;
@@ -53,6 +56,7 @@ int check_collision(Snake *snake);
 void load_high_score();
 void save_high_score(int score);
 int ask_replay();
+void wait_for_p_key();
 
 int main(int argc, char *argv[])
 {
@@ -67,7 +71,7 @@ int main(int argc, char *argv[])
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096); // Initialisez SDL_mixer
     eat_sound = Mix_LoadWAV("pacman_eatfruit.wav");    // Chargez le son
 
-    window = SDL_CreateWindow("Snake Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Snake SDL Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     Snake snake;
@@ -104,6 +108,9 @@ int main(int argc, char *argv[])
                     if (snake.direction != RIGHT)
                         snake.direction = LEFT;
                     break;
+                case SDLK_p:
+                    wait_for_p_key();
+                    break;
                 }
                 break;
             }
@@ -115,7 +122,7 @@ int main(int argc, char *argv[])
         {
             game_over = 1;
             int final_score = snake.length - 1;
-            printf("Le serpent a avalé %d jetons rouges.\n", final_score);
+            //printf("Le serpent a avalé %d jetons rouges.\n", final_score);
             save_high_score(final_score);
             int replay = ask_replay();
             if (replay)
@@ -131,7 +138,7 @@ int main(int argc, char *argv[])
 
         draw_game(&snake);
 
-        SDL_Delay(100);
+        SDL_Delay(150-(snake.length-1)*2);
     }
     Mix_FreeChunk(eat_sound); // Libérez la mémoire
     Mix_CloseAudio();         // Fermez SDL_mixer
@@ -173,14 +180,13 @@ void save_high_score(int score)
         }
     }
 }
-
 // Ajoutez une fonction pour dessiner le score
 void draw_score(int score)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     char score_text[50];
     sprintf(score_text, "Score: %d", score);
-    SDL_Surface *surface = TTF_RenderText_Solid(font, score_text, white);
+    SDL_Surface *surface = TTF_RenderText_Solid(font, score_text, blue);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect text_rect = {WINDOW_WIDTH - 130, WINDOW_HEIGHT - 30, 100, 30};
     SDL_RenderCopy(renderer, texture, NULL, &text_rect);
@@ -221,18 +227,19 @@ void draw_game(Snake *snake)
         SDL_Rect rect = {snake->x[i] * SNAKE_SIZE, snake->y[i] * SNAKE_SIZE, SNAKE_SIZE, SNAKE_SIZE};
         SDL_RenderFillRect(renderer, &rect);
     }
-
+    //Dessiner la nourriture
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_Rect food_rect = {food_x * FOOD_SIZE, food_y * FOOD_SIZE, FOOD_SIZE, FOOD_SIZE};
     SDL_RenderFillRect(renderer, &food_rect);
+
     // Draw score
     draw_score(snake->length - 1);
 
     // Dessiner le high score
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 128, SDL_ALPHA_OPAQUE);
     char high_score_text[50];
     sprintf(high_score_text, "High Score: %d", high_score);
-    SDL_Surface *surface = TTF_RenderText_Solid(font, high_score_text, white);
+    SDL_Surface *surface = TTF_RenderText_Solid(font, high_score_text, green);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect text_rect = {30, WINDOW_HEIGHT - 30, 200, 30};
     SDL_RenderCopy(renderer, texture, NULL, &text_rect);
@@ -332,7 +339,7 @@ int ask_replay()
         SDL_RenderClear(renderer);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-        SDL_Surface *surface = TTF_RenderText_Solid(font, "Play Again ? (y/n)", white);
+        SDL_Surface *surface = TTF_RenderText_Solid(font, "Play Again ? (y/n)", red);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_Rect text_rect = {WINDOW_WIDTH / 2 - 100, WINDOW_HEIGHT / 2 - 25, 200, 50};
         SDL_RenderCopy(renderer, texture, NULL, &text_rect);
@@ -343,4 +350,21 @@ int ask_replay()
     }
 
     return replay;
+}
+void wait_for_p_key()
+{
+    SDL_Event event;
+    int waiting = 1;
+
+    while (waiting)
+    {
+        SDL_WaitEvent(&event);
+        if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.keysym.sym == SDLK_p)
+            {
+                waiting = 0;
+            }
+        }
+    }
 }
