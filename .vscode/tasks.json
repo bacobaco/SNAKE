@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: cl.exe build active file",
+            "command": "cl.exe",
+            "args": [
+                "/Zi",
+                "/EHsc",
+                "/nologo",
+                "/Fe:",
+                "${workspaceFolder}\\build\\${fileBasenameNoExtension}.exe",
+                "${file}",
+                "/IC:\\Users\\bacoland\\Documents\\C\\SDL2\\include",
+                "/IC:\\Users\\bacoland\\Documents\\C\\SDL2_ttf\\include",
+                "/IC:\\Users\\bacoland\\Documents\\C\\SDL2_mixer\\include",
+                "/link",
+                "/LIBPATH:C:\\Users\\bacoland\\Documents\\C\\SDL2\\lib\\x86",
+                "/LIBPATH:C:\\Users\\bacoland\\Documents\\C\\SDL2_ttf\\lib\\x86",
+                "/LIBPATH:C:\\Users\\bacoland\\Documents\\C\\SDL2_mixer\\lib\\x86",
+                "SDL2.lib",
+                "SDL2main.lib",
+                "SDL2_ttf.lib",
+                "SDL2_mixer.lib"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\build"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

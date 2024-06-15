@@ -1,0 +1,4 @@
+1) ne pas oublier de lancer via le Developer Command Prompt for VS 2022 dans le directory SNAKE la commande >code . pour bien prendre en compte les outil de compile/link Microsoft Visual Studio.
+2) le code a été créer surtout avec AI perplexity ;-)
+3) difficulté avec l'entry point main() qu'il ne trouvait pas pour le link car redéfini dans SDL_MAIN.H. Il faut definir #define SDL_MAIN_HANDLED et lancer la commande spécifique     SDL_SetMainReady(); dans le main()
+
